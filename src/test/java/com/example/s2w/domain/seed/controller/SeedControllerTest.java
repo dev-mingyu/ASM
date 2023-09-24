@@ -37,11 +37,13 @@ import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest
+@Transactional
 class SeedControllerTest {
 
     private MockMvc mockMvc;
@@ -103,8 +105,9 @@ class SeedControllerTest {
     @Test
     @DisplayName("Seed 스캔 결과 저장")
     void createSeed() throws Exception {
-
         String content = objectMapper.writeValueAsString(seedRequestList);
+        entityManager.flush();
+        entityManager.clear();
 
         this.mockMvc.perform(
                     post("/api/v1/seeds")
@@ -137,9 +140,11 @@ class SeedControllerTest {
     @DisplayName("서브 도메인 목록 조회")
     void getSubDomainList() throws Exception{
         seedService.createSeedRequest(seedRequestList);
+        entityManager.flush();
+        entityManager.clear();
 
         this.mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/v1/seeds/{seedId}?page={page}&size={size}", seedId, 0, 2)
+                RestDocumentationRequestBuilders.get("/api/v1/seeds/{seedId}?page={page}&size={size}", seedId, 1, 2)
                                                 .contextPath("/api")
                                                 .accept(MEDIA_TYPE_JSON_UTF8)
                                                 .contentType(MEDIA_TYPE_JSON_UTF8))
@@ -176,12 +181,43 @@ class SeedControllerTest {
     }
 
     @Test
+    @DisplayName("서브 도메인 목록 조회 with Invalid Page")
+    void getSubDomainListWithInvalidPage() throws Exception {
+        seedService.createSeedRequest(seedRequestList);
+        entityManager.flush();
+        entityManager.clear();
+
+        this.mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/v1/seeds/{seedId}?page={page}&size={size}", seedId, 3, 2)
+                                                .contextPath("/api")
+                                                .accept(MEDIA_TYPE_JSON_UTF8)
+                                                .contentType(MEDIA_TYPE_JSON_UTF8))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn();
+    }
+
+    @Test
+    @DisplayName("서브 도메인 목록 조회 with Non-Existent SeedId")
+    void getSubDomainListWithNonExistentSeedId() throws Exception {
+
+        this.mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/v1/seeds/{seedId}?page={page}&size={size}", seedId, 1, 2)
+                                                .contextPath("/api")
+                                                .accept(MEDIA_TYPE_JSON_UTF8)
+                                                .contentType(MEDIA_TYPE_JSON_UTF8))
+                    .andExpect(status().isNotFound())
+                    .andDo(print())
+                    .andReturn();
+    }
+
+    @Test
     @DisplayName("소프트웨어 목록 조회")
     void getSoftWareList() throws Exception {
         seedService.createSeedRequest(seedRequestList);
 
         this.mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/api/v1/seeds/{seedId}/softwares?page={page}&size={size}", seedId, 0, 2)
+                RestDocumentationRequestBuilders.get("/api/v1/seeds/{seedId}/softwares?page={page}&size={size}", seedId, 1, 2)
                                                 .contextPath("/api")
                                                 .accept(MEDIA_TYPE_JSON_UTF8)
                                                 .contentType(MEDIA_TYPE_JSON_UTF8))

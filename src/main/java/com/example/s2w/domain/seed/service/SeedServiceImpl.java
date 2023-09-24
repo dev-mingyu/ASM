@@ -39,7 +39,9 @@ public class SeedServiceImpl implements SeedService {
                             .build();
         seedRepository.save(saveSeed);
 
-        seedSoftwareService.saveSeedSoftware(saveSeed, seed.getSoftwares());
+        if(seed.getSoftwares() != null && seed.getSoftwares().size() != 0) {
+            seedSoftwareService.saveSeedSoftware(saveSeed, seed.getSoftwares());
+        }
         return saveSeed;
     }
 

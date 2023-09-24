@@ -68,7 +68,7 @@ public class Seed extends BaseTime {
 
     }
 
-    private void validSeedId() {
+    void validSeedId() {
         if (this.seedId == null || this.seedId.length() != 15) {
             throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
         }
@@ -78,7 +78,7 @@ public class Seed extends BaseTime {
         }
     }
 
-    private void validIp() {
+    void validIp() {
         if (this.ip == null || !this.ip.matches(IPV4_PATTERN)) {
             throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
         }

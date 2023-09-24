@@ -8,6 +8,7 @@ import com.example.s2w.domain.seed.dto.SeedSoftWareDTO.SeedSoftwareNameList;
 import com.example.s2w.domain.seed.dto.SeedSoftWareDTO.SeedSoftwareResponse;
 import com.example.s2w.domain.seed.model.Seed;
 import com.example.s2w.domain.seed.model.SeedSoftware;
+import com.example.s2w.domain.seed.repository.SeedRepository;
 import com.example.s2w.domain.seed.repository.SeedSoftwareRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SeedSoftwareServiceImpl implements SeedSoftwareService {
 
     private final SeedSoftwareRepository seedSoftwareRepository;
+    private final SeedRepository seedRepository;
     private final PageInfoService pageInfoService;
 
     private SeedSoftwareNameList getSeedSoftwareNameList(List<SeedSoftware> seedSoftwareList) {
@@ -59,13 +61,15 @@ public class SeedSoftwareServiceImpl implements SeedSoftwareService {
 
     @Override
     public SeedSoftwareResponse getSeedSoftwareList(String seedId, Pageable pageable) {
-        Page<SeedSoftware> bySeedIdWithPageable = seedSoftwareRepository.findBySeedIdWithPageable(seedId, pageable);
-
-        if (bySeedIdWithPageable.getTotalElements() == 0) {
+        List<Seed> bySeedId = seedRepository.findBySeedId(seedId);
+        if(bySeedId.isEmpty()) {
             throw new NotFoundException(ErrorCode.NOT_FOUNT_SEED_ID);
         }
 
-        if (bySeedIdWithPageable.getTotalPages() < bySeedIdWithPageable.getNumber() + 1) {
+        Page<SeedSoftware> bySeedIdWithPageable = seedSoftwareRepository.findBySeedIdWithPageable(seedId, pageable);
+
+
+        if (bySeedIdWithPageable.getTotalPages() < bySeedIdWithPageable.getNumber()) {
             throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
         }
 

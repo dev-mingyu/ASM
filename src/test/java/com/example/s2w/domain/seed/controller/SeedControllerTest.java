@@ -1,5 +1,7 @@
 package com.example.s2w.domain.seed.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -15,6 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.s2w.domain.global.enumeration.SeedStatus;
+import com.example.s2w.domain.global.response.Code;
+import com.example.s2w.domain.global.response.Result;
 import com.example.s2w.domain.seed.dto.SeedDTO.CreateSeedRequest;
 import com.example.s2w.domain.seed.service.SeedService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +41,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -134,6 +140,58 @@ class SeedControllerTest {
                     )
                     .andDo(print())
                     .andReturn();
+    }
+
+    @Test
+    @DisplayName("Seed 스캔 결과 저장 - 유효하지 않은 요청")
+    void createSeed_InvalidRequest() throws Exception {
+        List<CreateSeedRequest> invalidSeedRequestList = new ArrayList<>();
+        invalidSeedRequestList.add(CreateSeedRequest.builder()
+                                             .seedId("SEED_8664d1e419#")
+                                             .subDomain("cafe.naver.com")
+                                             .status(SeedStatus.active)
+                                             .ip("3.38.222.16")
+                                             .softwares(Arrays.asList("Nginx", "Tomcat"))
+                                             .build());
+
+        invalidSeedRequestList.add(CreateSeedRequest.builder()
+                                             .seedId("SEED_8664d1e419")
+                                             .subDomain("nid.naver.com")
+                                             .status(SeedStatus.active)
+                                             .ip("52.78.116.514")
+                                             .softwares(Arrays.asList("React","Java"))
+                                             .build());
+
+        invalidSeedRequestList.add(CreateSeedRequest.builder()
+                                             .seedId("SEED_8664d1e4191")
+                                             .subDomain("shopping.naver.com")
+                                             .status(SeedStatus.active)
+                                             .ip("43.201.3.535")
+                                             .softwares(Arrays.asList("PWA","styled-components","Vue.js"))
+                                             .build());
+
+        String content = objectMapper.writeValueAsString(invalidSeedRequestList);
+
+        // 2. 해당 요청으로 API 호출
+        MvcResult mvcResult = this.mockMvc.perform(
+                                      post("/api/v1/seeds")
+                                          .contextPath("/api")
+                                          .content(content)
+                                          .accept(MEDIA_TYPE_JSON_UTF8)
+                                          .contentType(MEDIA_TYPE_JSON_UTF8))
+                                          .andExpect(status().isOk())
+                                          .andDo(print())
+                                          .andReturn();
+
+
+        String responseContent = mvcResult.getResponse().getContentAsString();
+        Result result = objectMapper.readValue(responseContent, Result.class);
+
+        assertEquals(Code.ERROR, result.getCode());
+        assertTrue(result.getMessage().contains("createSeed.request[0].seedId"));
+        assertTrue(result.getMessage().contains("createSeed.request[1].ip"));
+        assertTrue(result.getMessage().contains("createSeed.request[2].seedId"));
+        assertTrue(result.getMessage().contains("createSeed.request[2].ip"));
     }
 
     @Test

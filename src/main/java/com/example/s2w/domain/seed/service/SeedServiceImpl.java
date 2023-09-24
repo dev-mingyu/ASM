@@ -63,7 +63,7 @@ public class SeedServiceImpl implements SeedService {
     }
 
     @Override
-    public ReadSeedResponse getSeedList(String seedId, Pageable pageable) {
+    public ReadSeedResponse getSeedListWithPageable(String seedId, Pageable pageable) {
         Page<Seed> bySeedIdWithPageable = seedRepository.findBySeedIdWithPageable(seedId, pageable);
 
         if (bySeedIdWithPageable.getTotalElements() == 0) {
@@ -81,6 +81,15 @@ public class SeedServiceImpl implements SeedService {
                                                     .build();
 
         return pageInfoService.setPageableData(response, bySeedIdWithPageable);
+    }
+
+    @Override
+    public List<Seed> getSeedList(String seedId) {
+        List<Seed> seedList = seedRepository.findBySeedId(seedId);
+        if(seedList.isEmpty()) {
+            throw new NotFoundException(ErrorCode.NOT_FOUNT_SEED_ID);
+        }
+        return seedList;
     }
 
 

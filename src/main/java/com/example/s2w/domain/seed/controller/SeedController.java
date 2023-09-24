@@ -42,7 +42,7 @@ public class SeedController {
 
     @GetMapping("/{seedId}")
     public ResponseEntity<Result> getSubDomainList(@PathVariable("seedId") String seedId, Pageable pageable) {
-        ReadSeedResponse seedList = seedService.getSeedList(seedId, pageable);
+        ReadSeedResponse seedList = seedService.getSeedListWithPageable(seedId, pageable);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(Result.successResult(seedList));

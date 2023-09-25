@@ -1,7 +1,6 @@
 package com.example.s2w.domain.seed.service;
 
 import com.example.s2w.domain.common.pageinfo.service.PageInfoService;
-import com.example.s2w.domain.global.exception.type.InvalidRequestException;
 import com.example.s2w.domain.global.exception.type.NotFoundException;
 import com.example.s2w.domain.global.response.ErrorCode;
 import com.example.s2w.domain.seed.dto.SeedSoftWareDTO.SeedSoftwareNameList;
@@ -65,9 +64,6 @@ public class SeedSoftwareServiceImpl implements SeedSoftwareService {
             throw new NotFoundException(ErrorCode.NOT_FOUNT_SEED_ID);
         }
 
-        if (bySeedIdWithPageable.getTotalPages() < bySeedIdWithPageable.getNumber() + 1) {
-            throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
-        }
 
         SeedSoftwareResponse response = SeedSoftwareResponse.builder()
                                                             .contents(getSeedSoftwareNameList(bySeedIdWithPageable.getContent()))

@@ -1,6 +1,8 @@
 package com.example.s2w.domain.common.pageinfo.service;
 
 import com.example.s2w.domain.common.pageinfo.dto.PageDTO.PageResponse;
+import com.example.s2w.domain.global.exception.type.InvalidRequestException;
+import com.example.s2w.domain.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,11 @@ public class PageInfoServiceImpl implements PageInfoService {
 
     @Override
     public <T extends PageResponse> T setPageableData(T response, Page<?> pageData) {
+
+        if(pageData.getTotalPages() < pageData.getNumber() +1) {
+            throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
+        }
+
         response.setTotalElements(pageData.getTotalElements());
         response.setNumberOfElements(pageData.getNumberOfElements());
         response.setCurrentPage(pageData.getNumber() + 1);

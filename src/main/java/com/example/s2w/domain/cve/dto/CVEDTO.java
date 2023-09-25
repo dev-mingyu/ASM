@@ -21,10 +21,7 @@ public class CVEDTO {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ReadCVEResponse extends PageResponse {
-        private String seedId;
-        private String subDomain;
-        private String ip;
+    public static class ReadCVEResponse {
         private String cveCode;
         private String software;
     }

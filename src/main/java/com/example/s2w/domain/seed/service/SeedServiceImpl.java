@@ -1,7 +1,6 @@
 package com.example.s2w.domain.seed.service;
 
 import com.example.s2w.domain.common.pageinfo.service.PageInfoService;
-import com.example.s2w.domain.global.exception.type.InvalidRequestException;
 import com.example.s2w.domain.global.exception.type.NotFoundException;
 import com.example.s2w.domain.global.response.ErrorCode;
 import com.example.s2w.domain.seed.dto.SeedDTO.CreateSeedRequest;
@@ -65,15 +64,11 @@ public class SeedServiceImpl implements SeedService {
     }
 
     @Override
-    public ReadSeedResponse getSeedList(String seedId, Pageable pageable) {
+    public ReadSeedResponse getSeedListWithPageable(String seedId, Pageable pageable) {
         Page<Seed> bySeedIdWithPageable = seedRepository.findBySeedIdWithPageable(seedId, pageable);
 
         if (bySeedIdWithPageable.getTotalElements() == 0) {
             throw new NotFoundException(ErrorCode.NOT_FOUNT_SEED_ID);
-        }
-
-        if (bySeedIdWithPageable.getTotalPages() < bySeedIdWithPageable.getNumber() + 1) {
-            throw new InvalidRequestException(ErrorCode.INVALID_REQUEST);
         }
 
         List<ReadSeedDTO> readSeedDTOList = getReadSeedDTOS(bySeedIdWithPageable.getContent());
@@ -83,6 +78,15 @@ public class SeedServiceImpl implements SeedService {
                                                     .build();
 
         return pageInfoService.setPageableData(response, bySeedIdWithPageable);
+    }
+
+    @Override
+    public List<Seed> getSeedList(String seedId) {
+        List<Seed> seedList = seedRepository.findBySeedId(seedId);
+        if(seedList.isEmpty()) {
+            throw new NotFoundException(ErrorCode.NOT_FOUNT_SEED_ID);
+        }
+        return seedList;
     }
 
 

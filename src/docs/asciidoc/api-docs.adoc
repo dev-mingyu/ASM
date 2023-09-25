@@ -77,7 +77,7 @@ endif::[]
 
 |===
 
-[[SEEd]]
+[[SEED]]
 == `seed`
 === Seed 스캔 결과 저장
 operation::create-seed[snippets='http-request,request-fields,response-fields']
@@ -85,3 +85,8 @@ operation::create-seed[snippets='http-request,request-fields,response-fields']
 operation::get-sub-domain-list[snippets='http-request,path-parameters,request-parameters,response-fields']
 === 소프트웨어 목록 조회
 operation::get-software-list[snippets='http-request,path-parameters,request-parameters,response-fields']
+
+[[CVE]]
+== `cve`
+=== cve 목록 조회
+operation::read-cve-list-by-seed-id[snippets='http-request,path-parameters,request-parameters,response-fields,http-response']

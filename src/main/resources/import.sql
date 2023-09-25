@@ -1,0 +1,18 @@
+-- Insert into CVE table
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2022-21654', 'envoy');
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2022-21654', 'ios');
+
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-23383', 'tomcat');
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-23383', 'apache');
+
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-23370', 'vue.js');
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-23370', 'react');
+
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-23369', 'java');
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-23369', 'spring');
+
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-22931', 'node.js');
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-22931', 'javascript');
+
+INSERT INTO CVE (CVE_CODE, software) VALUES ('CVE-2021-22930', 'nginx');
+

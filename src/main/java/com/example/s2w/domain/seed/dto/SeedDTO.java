@@ -11,6 +11,7 @@ import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -47,6 +48,7 @@ public class SeedDTO {
 
     @SuperBuilder
     @Data
+    @EqualsAndHashCode(callSuper=false)
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReadSeedResponse extends PageResponse {

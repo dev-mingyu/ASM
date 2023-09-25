@@ -82,7 +82,7 @@ public class SeedServiceImpl implements SeedService {
 
     @Override
     public List<Seed> getSeedList(String seedId) {
-        List<Seed> seedList = seedRepository.findBySeedId(seedId);
+        List<Seed> seedList = seedRepository.findWithSoftwareBySeedId(seedId);
         if(seedList.isEmpty()) {
             throw new NotFoundException(ErrorCode.NOT_FOUNT_SEED_ID);
         }

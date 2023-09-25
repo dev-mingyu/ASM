@@ -1,29 +1,29 @@
 package com.example.s2w.domain.cve.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.s2w.domain.cve.service.CVEService;
 import com.example.s2w.domain.global.enumeration.SeedStatus;
 import com.example.s2w.domain.seed.dto.SeedDTO.CreateSeedRequest;
+import com.example.s2w.domain.seed.repository.SeedRepository;
+import com.example.s2w.domain.seed.repository.SeedSoftwareRepository;
 import com.example.s2w.domain.seed.service.SeedService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,11 +39,13 @@ import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest
+@Transactional
 class CVEControllerTest {
 
     private MockMvc mockMvc;
@@ -55,7 +57,7 @@ class CVEControllerTest {
     private SeedService seedService;
 
     @Autowired
-    private CVEService cveService;
+    private EntityManager entityManager;
 
     MediaType MEDIA_TYPE_JSON_UTF8 = new MediaType("application",
         "json",
@@ -105,13 +107,12 @@ class CVEControllerTest {
     @DisplayName("CVE 목록 조회 API")
     void readCveListBySeedId() throws Exception {
         seedService.createSeedRequest(seedRequestList);
-
-        String content = objectMapper.writeValueAsString(seedRequestList);
+        entityManager.flush();
+        entityManager.clear();
 
         this.mockMvc.perform(
                 RestDocumentationRequestBuilders.get("/api/v1/cve/seeds/{seedId}?page={page}&size={size}", seedId, 1, 10)
                                                 .contextPath("/api")
-                                                .content(content)
                                                 .accept(MEDIA_TYPE_JSON_UTF8)
                                                 .contentType(MEDIA_TYPE_JSON_UTF8))
                     .andExpect(status().isOk())

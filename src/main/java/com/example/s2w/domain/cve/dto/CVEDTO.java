@@ -4,6 +4,7 @@ import com.example.s2w.domain.common.pageinfo.dto.PageDTO.PageResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -11,6 +12,7 @@ public class CVEDTO {
 
     @SuperBuilder
     @Data
+    @EqualsAndHashCode(callSuper=false)
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReadCVEResponseWithPageable extends PageResponse {

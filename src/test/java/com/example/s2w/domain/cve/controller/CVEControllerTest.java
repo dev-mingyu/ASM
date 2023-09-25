@@ -144,4 +144,35 @@ class CVEControllerTest {
                     .andDo(print())
                     .andReturn();
     }
+
+    @Test
+    @DisplayName("CVE 목록 조회 API - 페이지 범위 초과")
+    void readCveListBySeedIdWithOverflowPage() throws Exception {
+        seedService.createSeedRequest(seedRequestList);
+        entityManager.flush();
+        entityManager.clear();
+
+        this.mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/v1/cve/seeds/{seedId}?page={page}&size={size}", seedId, 2, 10)
+                                                .contextPath("/api")
+                                                .accept(MEDIA_TYPE_JSON_UTF8)
+                                                .contentType(MEDIA_TYPE_JSON_UTF8))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn();
+    }
+
+    @Test
+    @DisplayName("CVE 목록 조회 API - SeedId 없음")
+    void readCveListBySeedIdWithoutSeedId() throws Exception {
+
+        this.mockMvc.perform(
+                RestDocumentationRequestBuilders.get("/api/v1/cve/seeds/{seedId}?page={page}&size={size}", "SEED_8664d1e410", 1, 2)
+                                                .contextPath("/api")
+                                                .accept(MEDIA_TYPE_JSON_UTF8)
+                                                .contentType(MEDIA_TYPE_JSON_UTF8))
+                    .andExpect(status().isNotFound())
+                    .andDo(print())
+                    .andReturn();
+    }
 }
